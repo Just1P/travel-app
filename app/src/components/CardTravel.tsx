@@ -9,16 +9,20 @@ const CardTravel = ({ travel }: CardTravelProps) => {
   return (
     <div className="shadow-md">
       <div className="h-[200px] overflow-hidden">
-        <img src={travel.image} alt="" />
+        <Link to={`/${travel.id}`}>
+          <img src={travel.image} alt="" />
+        </Link>
       </div>
       <div className="p-6">
-        <Link to={`/$travel.id}`}>
-          <h2 className="text-xl text-zinc-500 mt-2">{travel.name}</h2>
+        <Link to={`/${travel.id}`}>
+          <h2 className="text-xl text-zinc-500 font-bold mt-2">
+            {travel.name}
+          </h2>
         </Link>
 
         <p>
-          {travel.description.substring(0, 49)}
-          {travel.description.length > 49 && "..."}
+          {travel.description.substring(0, 50)}
+          {travel.description.length > 50 && "..."}
         </p>
       </div>
     </div>

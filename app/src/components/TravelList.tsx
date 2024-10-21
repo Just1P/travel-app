@@ -14,6 +14,7 @@ const TravelList = () => {
     const data = await response.json();
     setTravelList(data);
   };
+
   return (
     <div className="grid grid-cols-3 gap-4">
       {travelList.map((travel) => (
