@@ -1,8 +1,17 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
+
 const app = express();
 const port = 8000;
 
-const travels = [
+app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
+
+const travelList = [
   {
     id: 1,
     name: "Paris",
@@ -27,40 +36,56 @@ const travels = [
 
 // Get all travels
 app.get("/travels", (req: Request, res: Response) => {
-  res.send(travels);
+  res.send(travelList);
 });
 
 //Get One travel (app.get) (/travels/:id)
 app.get("/travels/:id", (req: Request, res: Response) => {
-  const id = parseInt(req.params.id, 10);
-  const travel = travels.find((t) => t.id === id);
-
-  if (travel) {
-    res.send(travel);
-  } else {
+  const { id } = req.params;
+  const travel = travelList.find((t) => t.id === Number(id));
+  if (!travel) {
     res.status(404).send({ message: "Travel not found" });
   }
+  res.send(travel);
 });
 
 //Create travel (app.post) (/travels)
-app.get("/travels", (req: Request, res: Response) => {
-  const { name, city, country, image, description } = req.body;
-  const newTravel = {
-    id: travels.length > 0 ? travels[travels.length - 1].id + 1 : 1,
-    name,
-    city,
-    country,
-    image,
-    description,
-  };
-
-  travels.push;
-  newTravel;
-  res.status(201).send(newTravel);
+app.post("/travels", (req: Request, res: Response) => {
+  const travel = req.body;
+  const newId = travelList.length + 1;
+  // Create a new travel object
+  travel.id = newId;
+  // Add the new travel into the travel list array
+  travelList.push(travel);
+  // Send the created travel data as response
+  res.send(travel);
 });
 //Update travel (app.put) (/travels/:id)
+app.put("/travels/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updatedTravelData = req.body;
+  const index = travelList.findIndex((t) => t.id === parseInt(id));
+  travelList[index] = {
+    ...travelList[index],
+    ...updatedTravelData,
+  };
+
+  res.send(travelList[index]);
+});
 
 //Delete travel (app.delete) (/travels/:id)
+app.delete("/travels/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const index = travelList.findIndex((t) => t.id === Number(id));
+  if (index === -1) {
+    res.status(404).send({ message: `Error travel with id ${id} not found` });
+  }
+  travelList.splice(index, 1);
+  res.status(204).send({
+    message: "Succes to delete",
+  });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
