@@ -12,8 +12,7 @@ app.use(
   })
 );
 
-//Connection to mysql database
-
+// Connection to the mysql database
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -35,11 +34,12 @@ app.get("/", (req: Request, res: Response) => {
 
 // Get all travels (app.get) (/travels)
 app.get("/travels", (req: Request, res: Response) => {
-  connection.query("SELECT * from travel", function (error, results, fields) {
+  connection.query("SELECT * from travel", function (error, results) {
     if (error) {
       res.status(500).send({ error: "Error while fetching data" });
       return;
     }
+
     res.status(200).send(results);
   });
 });
@@ -51,7 +51,6 @@ app.get("/travels/:id", (req: Request, res: Response) => {
 
   const sql = "SELECT * FROM travel WHERE id = ?";
   const values = [id];
-
   connection.query(sql, values, (error, results) => {
     if (error) {
       res.status(500).send({ error: "Error while fetching data" });
@@ -62,6 +61,7 @@ app.get("/travels/:id", (req: Request, res: Response) => {
       res.status(404).send({ error: "Travel not found" });
       return;
     }
+
     if (Array.isArray(results) && results.length === 1) {
       res.status(200).send(results[0]);
       return;
@@ -88,40 +88,63 @@ app.post("/travels", (req: Request, res: Response) => {
   });
 });
 
-// // Update travel (app.put) (/travels/:id)
-// app.put("/travels/:id", (req: Request, res: Response) => {
-//   const { id } = req.params;
+// Update travel (app.put) (/travels/:id)
+app.put("/travels/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
 
-//   const sqlSelect = "SELECT * FROM travel WHERE id = ?";
-//   const sqlUpdate =
-//     "UPDATE travel SET title = ?, city = ?, country = ?, image = ?, description = ? WHERE id = ?";
+  console.log("end point update (id): ", id);
+  console.log("end point update (body): ", req.body);
 
-//   connection.query(sqlSelect, [id], (error, results) => {
-//     if (error) {
-//       res.status(500).send({ error: "Error while fetching data" });
-//       return;
-//     }
-//     if (Array.isArray(results) && results.length === 0) {
-//       res.status(404).send({ error: "Travel not found" });
-//       return;
-//     }
+  connection.query(
+    "SELECT * FROM travel WHERE id = ?",
+    [id],
+    (error, results) => {
+      console.log("results: ", results);
+      console.log("error: ", error);
+      if (error) {
+        console.log("error: ", error);
+        res.status(500).send({ error: "Error while fetching data" });
+        return;
+      }
+      if (Array.isArray(results) && results.length === 0) {
+        res.status(404).send({ error: "Travel not found" });
+        return;
+      }
 
-//     const existingTravel = results[0];
-//     const updatedTravel = { ...existingTravel, ...req.body };
+      if (Array.isArray(results) && results.length === 1) {
+        const currentTravel = results[0];
+        const newTravel = {
+          ...currentTravel,
+          ...req.body,
+        };
 
-//     const { title, city, country, image, description } = updatedTravel;
-//     const values = [title, city, country, image, description, id];
+        console.log("newTravel: ", newTravel);
 
-//     connection.query(sqlUpdate, values, (error, results) => {
-//       if (error) {
-//         res.status(500).send({ error: "Error while updating data" });
-//         return;
-//       }
+        const sqlUpdate =
+          "UPDATE travel SET title = ?, city = ?, country = ?, image = ?, description = ? WHERE id = ?";
+        const values = [
+          newTravel.title,
+          newTravel.city,
+          newTravel.country,
+          newTravel.image,
+          newTravel.description,
+          id,
+        ];
 
-//       res.status(200).send({ message: "Travel updated successfully" });
-//     });
-//   });
-// });
+        connection.query(sqlUpdate, values, (error, results) => {
+          if (error) {
+            res.status(500).send({ error: "Error while updating data" });
+            return;
+          }
+
+          res.status(200).send({ message: "Travel updated successfully" });
+        });
+      }
+    }
+  );
+
+  // res.status(200).send({ message: "Travel updated successfully" });
+});
 
 // Delete travel (app.delete) (/travels/:id)
 app.delete("/travels/:id", (req: Request, res: Response) => {

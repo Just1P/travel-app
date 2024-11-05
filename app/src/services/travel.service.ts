@@ -26,6 +26,18 @@ export const create = async (travel: TravelDTO) => {
   return data;
 };
 
+export const update = async (travel: TravelDTO, id: string) => {
+  const response = await fetch(`${API_URL}/travels/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(travel),
+  });
+  const data = await response.json();
+  return data;
+};
+
 export const remove = async (id: string) => {
   return await fetch(`${API_URL}/travels/${id}`, {
     method: "DELETE",

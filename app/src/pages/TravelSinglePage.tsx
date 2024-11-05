@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { TravelType } from "../types/travel.type";
 import { findOneById, remove } from "../services/travel.service";
+import Button from "../components/Button";
 
 const TravelSinglePage = () => {
   const { id } = useParams();
@@ -36,15 +37,10 @@ const TravelSinglePage = () => {
     <div>
       <img src={travel?.image} alt="" />
       <h1>{travel?.title}</h1>
+      <Link to={`/edit/${id}`}>Editer</Link>
 
-      <button
-        onClick={handleDelete}
-        className="bg-red-400 text-white text-xl px-4 py-2 hover:bg-red-500 transition-all"
-      >
-        Delete
-      </button>
+      <Button text="Delete" variant="danger" onClick={handleDelete} />
     </div>
   );
 };
-
 export default TravelSinglePage;
