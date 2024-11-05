@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import TravelListPage from "./pages/TravelListPage";
 import TravelSinglePage from "./pages/TravelSinglePage";
+import TravelEditPage from "./pages/TravelEditPage";
 
 function App() {
   return (

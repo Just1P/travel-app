@@ -2,11 +2,11 @@ import { useState } from "react";
 import { TravelDTO } from "../types/travel.type";
 import { create } from "../services/travel.service";
 
-type FormAddTravelProps = {
+type FormTravelProps = {
   fetchTravels: () => void;
 };
 
-const FormAddTravel = ({ fetchTravels }: FormAddTravelProps) => {
+const FormTravel = ({ fetchTravels }: FormTravelProps) => {
   const [credentials, setCredentials] = useState<TravelDTO>({});
 
   const heandleChange = (e: React.ChangeEvent) => {
@@ -70,4 +70,4 @@ const FormAddTravel = ({ fetchTravels }: FormAddTravelProps) => {
   );
 };
 
-export default FormAddTravel;
+export default FormTravel;
