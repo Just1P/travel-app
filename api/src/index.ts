@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import mysql from "mysql";
 
 const app = express();
 const port = 8000;
@@ -11,79 +12,151 @@ app.use(
   })
 );
 
-const travelList = [
-  {
-    id: 1,
-    name: "Paris",
-    city: "Paris",
-    country: "France",
-    image:
-      "https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg",
-    description:
-      "Paris is known for its iconic landmarks like the Eiffel Tower, art museums like the Louvre, and its romantic atmosphere.",
-  },
-  {
-    id: 2,
-    name: "New York City",
-    city: "New York",
-    country: "USA",
-    image:
-      "https://www.planetware.com/photos-large/USNY/new-york-city-empire-state-building.jpg",
-    description:
-      "New York City is famous for its skyline, Central Park, Times Square, and vibrant cultural life.",
-  },
-];
+//Connection to mysql database
 
-// Get all travels
-app.get("/travels", (req: Request, res: Response) => {
-  res.send(travelList);
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "admin",
+  database: "travel_app",
 });
 
-//Get One travel (app.get) (/travels/:id)
+connection.connect((err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log("Connected to the database");
+  }
+});
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello !");
+});
+
+// Get all travels (app.get) (/travels)
+app.get("/travels", (req: Request, res: Response) => {
+  connection.query("SELECT * from travel", function (error, results, fields) {
+    if (error) {
+      res.status(500).send({ error: "Error while fetching data" });
+      return;
+    }
+    res.status(200).send(results);
+  });
+});
+
+// Get One travel (app.get) (/travels/:id)
 app.get("/travels/:id", (req: Request, res: Response) => {
   const { id } = req.params;
-  const travel = travelList.find((t) => t.id === Number(id));
-  if (!travel) {
-    res.status(404).send({ message: "Travel not found" });
-  }
-  res.send(travel);
+  console.log("end point get one (id): ", id);
+
+  const sql = "SELECT * FROM travel WHERE id = ?";
+  const values = [id];
+
+  connection.query(sql, values, (error, results) => {
+    if (error) {
+      res.status(500).send({ error: "Error while fetching data" });
+      return;
+    }
+
+    if (Array.isArray(results) && results.length === 0) {
+      res.status(404).send({ error: "Travel not found" });
+      return;
+    }
+    if (Array.isArray(results) && results.length === 1) {
+      res.status(200).send(results[0]);
+      return;
+    }
+  });
 });
 
-//Create travel (app.post) (/travels)
+// Create travel (app.post) (/travels)
 app.post("/travels", (req: Request, res: Response) => {
-  const travel = req.body;
-  const newId = travelList.length + 1;
-  // Create a new travel object
-  travel.id = newId;
-  // Add the new travel into the travel list array
-  travelList.push(travel);
-  // Send the created travel data as response
-  res.send(travel);
+  const { title, city, country, image, description } = req.body;
+
+  const sqlInsert =
+    "INSERT INTO travel (title, city, country, image, description, created_at) VALUES (?, ?, ?, ?, ?)";
+  const values = [title, city, country, image, description];
+
+  // Insérer le nouveau voyage dans la base de données
+  connection.query(sqlInsert, values, (error, results) => {
+    if (error) {
+      console.error("Error while inserting data:", error);
+      res.status(500).send({ error: "Error while creating data" });
+      return;
+    }
+
+    console.log("results", results);
+
+    res.status(200).send({ message: "Travel created successfully" });
+  });
 });
-//Update travel (app.put) (/travels/:id)
+
+// Update travel (app.put) (/travels/:id)
 app.put("/travels/:id", (req: Request, res: Response) => {
   const { id } = req.params;
-  const updatedTravelData = req.body;
-  const index = travelList.findIndex((t) => t.id === parseInt(id));
-  travelList[index] = {
-    ...travelList[index],
-    ...updatedTravelData,
-  };
 
-  res.send(travelList[index]);
+  const sqlSelect = "SELECT * FROM travel WHERE id = ?";
+  const sqlUpdate =
+    "UPDATE travel SET title = ?, city = ?, country = ?, image = ?, description = ? WHERE id = ?";
+
+  connection.query(sqlSelect, [id], (error, results) => {
+    if (error) {
+      res.status(500).send({ error: "Error while fetching data" });
+      return;
+    }
+    if (Array.isArray(results) && results.length === 0) {
+      res.status(404).send({ error: "Travel not found" });
+      return;
+    }
+
+    const existingTravel = results[0];
+    const updatedTravel = { ...existingTravel, ...req.body };
+
+    const { title, city, country, image, description } = updatedTravel;
+    const values = [title, city, country, image, description, id];
+
+    connection.query(sqlUpdate, values, (error, results) => {
+      if (error) {
+        res.status(500).send({ error: "Error while updating data" });
+        return;
+      }
+
+      res.status(200).send({ message: "Travel updated successfully" });
+    });
+  });
 });
 
-//Delete travel (app.delete) (/travels/:id)
+// Delete travel (app.delete) (/travels/:id)
 app.delete("/travels/:id", (req: Request, res: Response) => {
   const { id } = req.params;
+  console.log("end point delete (id): ", id);
 
-  const index = travelList.findIndex((t) => t.id === Number(id));
-  if (index === -1) {
-    res.status(404).send({ message: `Error travel with id ${id} not found` });
-  }
-  travelList.splice(index, 1);
-  res.status(204).send({
-    message: "Succes to delete",
+  const sqlDelete = "DELETE FROM travel WHERE id = ?";
+  const sqlSelect = "SELECT * FROM travel WHERE id = ?";
+  const values = [id];
+
+  // Vérifier si l'id existe dans la base de données
+  connection.query(sqlSelect, values, (error, results) => {
+    if (error) {
+      res.status(500).send({ error: "Error while fetching data" });
+      return;
+    }
+    if (Array.isArray(results) && results.length === 0) {
+      res.status(404).send({ error: "Travel not found" });
+      return;
+    }
+  });
+
+  // Si l'id existe, on peut supprimer
+  connection.query(sqlDelete, values, (error, results) => {
+    if (error) {
+      res.status(500).send({ error: "Error while fetching data" });
+      return;
+    }
+
+    console.log("results", results);
+
+    res.status(200).send({ message: "Success to delete" });
   });
 });
 

@@ -1,0 +1,20 @@
+services:
+  database:
+    image: mysql:5.7
+    container_name: travel-database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: travel-phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: admin

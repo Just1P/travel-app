@@ -16,13 +16,13 @@ const CardTravel = ({ travel }: CardTravelProps) => {
       <div className="p-6">
         <Link to={`/${travel.id}`}>
           <h2 className="text-xl text-zinc-500 font-bold mt-2">
-            {travel.name}
+            {travel.title}
           </h2>
         </Link>
 
         <p>
-          {travel.description.substring(0, 50)}
-          {travel.description.length > 50 && "..."}
+          {travel?.description?.substring(0, 50)}
+          {travel?.description?.length > 50 && "..."}
         </p>
       </div>
     </div>

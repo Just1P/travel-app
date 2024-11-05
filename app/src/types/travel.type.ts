@@ -1,6 +1,6 @@
 export type TravelType = {
   id: number;
-  name: string;
+  title: string;
   city: string;
   country: string;
   image: string;
@@ -8,7 +8,7 @@ export type TravelType = {
 };
 
 export type TravelDTO = {
-  name: string;
+  title: string;
   city: string;
   country: string;
   image: string;

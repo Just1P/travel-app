@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TravelDTO } from "../types/travel.type";
+import { create } from "../services/travel.service";
 
 type FormAddTravelProps = {
   fetchTravels: () => void;
@@ -22,15 +23,7 @@ const FormAddTravel = ({ fetchTravels }: FormAddTravelProps) => {
     console.log("Submit form", credentials);
 
     try {
-      const response = await fetch("http://localhost:8000/travels", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
-      const data = await response.json();
-      console.log("response data : ", data);
+      await create(credentials);
       fetchTravels();
     } catch (error) {
       console.log("Error : ", error);
@@ -42,8 +35,8 @@ const FormAddTravel = ({ fetchTravels }: FormAddTravelProps) => {
       <div>
         <input
           type="text"
-          name="name"
-          placeholder="Entrez un nom"
+          name="title"
+          placeholder="Entrez un titre"
           onChange={heandleChange}
           required
         />

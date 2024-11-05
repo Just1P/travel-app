@@ -2,14 +2,18 @@ import { useState } from "react";
 import FormAddTravel from "../components/FormAddTravel";
 import TravelList from "../components/TravelList";
 import { TravelType } from "../types/travel.type";
+import { findAll } from "../services/travel.service";
 
 const TravelListPage = () => {
   const [travelList, setTravelList] = useState<TravelType[]>([]);
 
   const fetchTravels = async () => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/travels`);
-    const data = await response.json();
-    setTravelList(data);
+    try {
+      const travels = await findAll();
+      setTravelList(travels);
+    } catch (error) {
+      console.log("Error to fetch travels", error);
+    }
   };
 
   return (

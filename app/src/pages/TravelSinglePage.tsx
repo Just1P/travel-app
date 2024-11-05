@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { TravelType } from "../types/travel.type";
+import { findOneById, remove } from "../services/travel.service";
 
 const TravelSinglePage = () => {
   const { id } = useParams();
@@ -8,32 +9,23 @@ const TravelSinglePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchTravels();
+    if (id) fetchTravel();
   }, []);
 
-  const fetchTravels = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/travels/${id}`,
-      {
-        method: "GET", // GET, POST, PUT, DELETE...
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    setTravel(data);
+  const fetchTravel = async () => {
+    try {
+      const travel = await findOneById(id as string);
+      setTravel(travel);
+    } catch (error) {
+      console.log("Error to fetch travels", error);
+    }
   };
 
   const handleDelete = async () => {
+    if (!id) return;
+
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      console.log("Success to delete");
+      await remove(id);
       navigate("/");
     } catch (error) {
       console.log("Success to delete", error);
@@ -43,7 +35,7 @@ const TravelSinglePage = () => {
   return (
     <div>
       <img src={travel?.image} alt="" />
-      <h1>{travel?.name}</h1>
+      <h1>{travel?.title}</h1>
 
       <button
         onClick={handleDelete}
