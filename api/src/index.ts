@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import mysql from "mysql";
+import mysql, { ResultSetHeader } from "mysql2";
 
 const app = express();
 const port = 8000;
@@ -72,59 +72,56 @@ app.get("/travels/:id", (req: Request, res: Response) => {
 // Create travel (app.post) (/travels)
 app.post("/travels", (req: Request, res: Response) => {
   const { title, city, country, image, description } = req.body;
-
-  const sqlInsert =
-    "INSERT INTO travel (title, city, country, image, description, created_at) VALUES (?, ?, ?, ?, ?)";
+  const sql =
+    "INSERT INTO travel (title, city, country, image, description) VALUES (?, ?, ?, ?, ?)";
   const values = [title, city, country, image, description];
 
-  // Insérer le nouveau voyage dans la base de données
-  connection.query(sqlInsert, values, (error, results) => {
+  connection.query(sql, values, (error, results) => {
     if (error) {
-      console.error("Error while inserting data:", error);
       res.status(500).send({ error: "Error while creating data" });
       return;
     }
-
-    console.log("results", results);
-
+    if ("insertId" in results) {
+      console.log("results: ", (results as ResultSetHeader).insertId);
+    }
     res.status(200).send({ message: "Travel created successfully" });
   });
 });
 
-// Update travel (app.put) (/travels/:id)
-app.put("/travels/:id", (req: Request, res: Response) => {
-  const { id } = req.params;
+// // Update travel (app.put) (/travels/:id)
+// app.put("/travels/:id", (req: Request, res: Response) => {
+//   const { id } = req.params;
 
-  const sqlSelect = "SELECT * FROM travel WHERE id = ?";
-  const sqlUpdate =
-    "UPDATE travel SET title = ?, city = ?, country = ?, image = ?, description = ? WHERE id = ?";
+//   const sqlSelect = "SELECT * FROM travel WHERE id = ?";
+//   const sqlUpdate =
+//     "UPDATE travel SET title = ?, city = ?, country = ?, image = ?, description = ? WHERE id = ?";
 
-  connection.query(sqlSelect, [id], (error, results) => {
-    if (error) {
-      res.status(500).send({ error: "Error while fetching data" });
-      return;
-    }
-    if (Array.isArray(results) && results.length === 0) {
-      res.status(404).send({ error: "Travel not found" });
-      return;
-    }
+//   connection.query(sqlSelect, [id], (error, results) => {
+//     if (error) {
+//       res.status(500).send({ error: "Error while fetching data" });
+//       return;
+//     }
+//     if (Array.isArray(results) && results.length === 0) {
+//       res.status(404).send({ error: "Travel not found" });
+//       return;
+//     }
 
-    const existingTravel = results[0];
-    const updatedTravel = { ...existingTravel, ...req.body };
+//     const existingTravel = results[0];
+//     const updatedTravel = { ...existingTravel, ...req.body };
 
-    const { title, city, country, image, description } = updatedTravel;
-    const values = [title, city, country, image, description, id];
+//     const { title, city, country, image, description } = updatedTravel;
+//     const values = [title, city, country, image, description, id];
 
-    connection.query(sqlUpdate, values, (error, results) => {
-      if (error) {
-        res.status(500).send({ error: "Error while updating data" });
-        return;
-      }
+//     connection.query(sqlUpdate, values, (error, results) => {
+//       if (error) {
+//         res.status(500).send({ error: "Error while updating data" });
+//         return;
+//       }
 
-      res.status(200).send({ message: "Travel updated successfully" });
-    });
-  });
-});
+//       res.status(200).send({ message: "Travel updated successfully" });
+//     });
+//   });
+// });
 
 // Delete travel (app.delete) (/travels/:id)
 app.delete("/travels/:id", (req: Request, res: Response) => {

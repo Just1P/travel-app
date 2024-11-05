@@ -13,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<TravelListPage />} />
           <Route path="/:id" element={<TravelSinglePage />} />
+          <Route path="/edit/:id" element={<TravelEditPage />} />
         </Routes>
       </div>
     </BrowserRouter>
