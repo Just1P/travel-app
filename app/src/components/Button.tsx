@@ -5,7 +5,7 @@ type ButtonProps = {
 };
 
 const style = {
-  main: "text-xl px-4 py-2 transition-all text-white",
+  main: "text-xl px-4 py-2 transition-all text-white mb-4 rounded",
   primary: "bg-blue-400  hover:bg-blue-500",
   secondary: "",
   danger: "bg-red-400  hover:bg-red-500",

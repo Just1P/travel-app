@@ -3,6 +3,7 @@ import { TravelDTO } from "../types/travel.type";
 import { create, findOneById, update } from "../services/travel.service";
 import { useParams } from "react-router-dom";
 import Button from "./Button";
+import Input from "./Input";
 
 type FormTravelProps = {
   fetchTravels?: () => void;
@@ -59,44 +60,46 @@ const FormTravel = ({ fetchTravels }: FormTravelProps) => {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <input
-          type="text"
-          name="title"
-          placeholder="Entrez un titre"
-          onChange={heandleChange}
-          value={credentials.title}
-          required
-        />
-        <input
-          type="text"
-          name="city"
-          placeholder="Entrez une ville"
-          value={credentials.city}
-          onChange={heandleChange}
-        />
-        <input
-          type="text"
-          name="country"
-          placeholder="Entrez un pays"
-          value={credentials.country}
-          onChange={heandleChange}
-        />
-        <input
-          type="text"
-          name="image"
-          placeholder="Entrez une image"
-          value={credentials.image}
-          onChange={heandleChange}
-        />
-        <input
-          type="text"
-          name="description"
-          placeholder="Entrez une description"
-          value={credentials.description}
-          onChange={heandleChange}
-        />
+        <div className="flex flex-col gap-2 mb-5">
+          <Input
+            type="text"
+            name="title"
+            placeholder="Entrez un titre"
+            onChange={heandleChange}
+            value={credentials.title}
+            required={true}
+          />
+          <Input
+            type="text"
+            name="city"
+            placeholder="Entrez une ville"
+            value={credentials.city}
+            onChange={heandleChange}
+          />
+          <Input
+            type="text"
+            name="country"
+            placeholder="Entrez un pays"
+            value={credentials.country}
+            onChange={heandleChange}
+          />
+          <Input
+            type="text"
+            name="image"
+            placeholder="Entrez une image"
+            value={credentials.image}
+            onChange={heandleChange}
+          />
+          <Input
+            type="text"
+            name="description"
+            placeholder="Entrez une description"
+            value={credentials.description}
+            onChange={heandleChange}
+          />
+        </div>
+
         <div>
-          <input type="submit" value={`${id ? "Editer" : "Ajouter"}`} />
           <Button type="submit" text={`${id ? "Editer" : "Ajouter"}`}>
             {" "}
           </Button>
