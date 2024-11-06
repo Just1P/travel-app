@@ -2,6 +2,8 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import TravelListPage from "./pages/TravelListPage";
 import TravelSinglePage from "./pages/TravelSinglePage";
 import TravelEditPage from "./pages/TravelEditPage";
+import CategoryListPage from "./pages/CategoryListPage";
+import CategorySinglePage from "./pages/CategorySinglePage";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
           <Route path="/" element={<TravelListPage />} />
           <Route path="/:id" element={<TravelSinglePage />} />
           <Route path="/edit/:id" element={<TravelEditPage />} />
+          <Route path="/categories" element={<CategoryListPage />} />
+          <Route path="/categories/:id" element={<CategorySinglePage />} />
         </Routes>
       </div>
     </BrowserRouter>
