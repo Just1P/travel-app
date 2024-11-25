@@ -11,6 +11,6 @@ TravelController.post("/", TravelService.create);
 
 TravelController.put("/:id", TravelService.update);
 
-TravelController.delete("/", TravelService.remove);
+TravelController.delete("/:id", TravelService.remove);
 
 export default TravelController;

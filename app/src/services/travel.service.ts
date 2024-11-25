@@ -26,7 +26,7 @@ export const create = async (travel: TravelDTO) => {
   return data;
 };
 
-export const update = async (travel: TravelDTO, id: string) => {
+export const update = async (id: string, travel: TravelDTO) => {
   const response = await fetch(`${API_URL}/travels/${id}`, {
     method: "PUT",
     headers: {
