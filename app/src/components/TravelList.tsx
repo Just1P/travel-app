@@ -10,7 +10,7 @@ type TravelListProps = {
 const TravelList = ({ travelList, fetchTravels }: TravelListProps) => {
   useEffect(() => {
     fetchTravels();
-  }, [fetchTravels]);
+  }, []);
 
   return (
     <div className="grid grid-cols-3 gap-4">

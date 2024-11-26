@@ -9,6 +9,7 @@ const getAll = async (req: Request, res: Response) => {
       return;
     }
 
+    console.log("results", results);
     res.status(200).send(results);
   });
 };
@@ -109,6 +110,7 @@ const update = async (req: Request, res: Response) => {
     }
   );
 };
+
 const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
   console.log("end point delete (id): ", id);

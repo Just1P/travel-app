@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import CommentController from "./comment/comment.controller";
 import TravelController from "./travel/travel.controler";
-import CategoryController from "./category/category.controller";
 import LoggerService from "./middleware/logger.middleware";
 
 const app = express();
@@ -14,15 +13,14 @@ app.use(
     origin: "http://localhost:5173",
   })
 );
-
 app.use(LoggerService);
-app.use("/comments", CommentController);
-app.use("/travels", TravelController);
-app.use("/categories", CategoryController);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello !");
 });
+
+app.use("/comments", CommentController);
+app.use("/travels", TravelController);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

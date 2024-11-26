@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { TravelDTO } from "../types/travel.type";
-import { create, findOneById, update } from "../services/travel.service";
-import { useParams } from "react-router-dom";
+import { findOneById, update } from "../services/travel.service";
+import { useParams, useNavigate } from "react-router-dom";
 import Button from "./Button";
 import Input from "./Input";
 
@@ -10,6 +10,7 @@ type FormTravelProps = {
 };
 
 const FormTravel = ({ fetchTravels }: FormTravelProps) => {
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState<TravelDTO>({
     title: "",
     city: "",
@@ -42,18 +43,24 @@ const FormTravel = ({ fetchTravels }: FormTravelProps) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Submit form", credentials);
+    e.preventDefault(); // Empêche le rechargement de la page par défaut
 
     try {
       if (id) {
-        await update(credentials, id);
+        // Assurez-vous que l'ID est correct
+        console.log("Updating travel with ID:", id);
+
+        await update(credentials, id); // Appel à la fonction update
+        console.log("Travel updated successfully");
+
+        if (fetchTravels) fetchTravels();
+        navigate("/"); // Actualise la liste des voyages si nécessaire
       } else {
-        await create(credentials);
-        fetchTravels();
+        console.error("ID is missing. Cannot update travel.");
       }
     } catch (error) {
-      console.log("Error : ", error);
+      console.error("Failed to update travel:", error);
+      alert("An error occurred while updating the travel. Please try again."); // Affiche une alerte pour l'utilisateur
     }
   };
 

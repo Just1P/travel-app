@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { TravelType } from "../types/travel.type";
 import { findOneById, remove } from "../services/travel.service";
 import Button from "../components/Button";
+import CommentList from "../components/CommentList";
+import CommentForm from "../components/CommentForm";
 
 const TravelSinglePage = () => {
   const { id } = useParams();
@@ -11,7 +13,7 @@ const TravelSinglePage = () => {
 
   useEffect(() => {
     if (id) fetchTravel();
-  }, []);
+  }, [id]);
 
   const fetchTravel = async () => {
     try {
@@ -40,6 +42,10 @@ const TravelSinglePage = () => {
       <Link to={`/edit/${id}`}>Editer</Link>
 
       <Button text="Delete" variant="danger" onClick={handleDelete} />
+
+      <CommentForm />
+
+      <CommentList />
     </div>
   );
 };
